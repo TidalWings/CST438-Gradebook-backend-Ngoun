@@ -51,7 +51,9 @@ import org.springframework.test.context.ContextConfiguration;
 @WebMvcTest
 public class JunitTestGradebook {
 
-	static final String URL = "http://localhost:8080";
+    // Changed to work w/ the Gradebook DB
+	static final String URL = "http://localhost:8081";
+	// static final String URL = "http://localhost:8080";
 	public static final int TEST_COURSE_ID = 40442;
 	public static final String TEST_STUDENT_EMAIL = "test@csumb.edu";
 	public static final String TEST_STUDENT_NAME = "test";
