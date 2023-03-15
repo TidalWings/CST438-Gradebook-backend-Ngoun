@@ -2,29 +2,23 @@ package com.cst438.controllers;
 
 import java.sql.Date;
 
-import javax.transaction.TransactionScoped;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cst438.domain.Assignment;
 import com.cst438.domain.AssignmentDTO;
-import com.cst438.domain.AssignmentGrade;
 import com.cst438.domain.AssignmentGradeRepository;
 import com.cst438.domain.AssignmentRepository;
 import com.cst438.domain.Course;
 import com.cst438.domain.CourseRepository;
-import com.cst438.domain.GradebookDTO;
 
 @RestController
 public class AssignmentController {
@@ -35,9 +29,12 @@ public class AssignmentController {
     @Autowired
     AssignmentGradeRepository assignmentGradeRepository;
 
-    // TODO: Maybe putting the data in the Body somehow would be better?
+    // addAssignment takes a course_id in the URL alongwith the name and due date of the assignment in the URL and then gets processed here to be submitted into the database.
+    // TODO: Finalize conversion of input data.
+    // @PostMapping("/{course_id}/assignment/new")
     @PostMapping("/{course_id}/assignment/new/{name}/{due_date}/")
     @Transactional
+    // public void addAssignment(@RequestBody AssignmentDTO inputAssignment, @PathVariable("course_id") int courseID) {
     public void addAssignment(@PathVariable("name") String assignmentName, @PathVariable("due_date") Date dueDate, @PathVariable("course_id") int courseID) {
         
         // Taken from Gradebook Controller. Ensures that the course that the assignment is being added to is by the same instructor doing the action.
@@ -49,6 +46,10 @@ public class AssignmentController {
         }
 
         // Use the details from the front-end to create a new assignment, then save it with the repo we imported (injected) earlier.
+        // TODO: Preparing to utilize body/DTOs.
+        // String assignmentName = inputAssignment.name;
+        // Date dueDate = inputAssignment.dueDate;
+        // Create the assignment from those details.
         Assignment tempAssign = new Assignment();
         tempAssign.setName(assignmentName);
         tempAssign.setDueDate(dueDate);

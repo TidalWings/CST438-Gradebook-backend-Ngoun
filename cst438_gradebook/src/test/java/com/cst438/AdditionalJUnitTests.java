@@ -17,19 +17,17 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.sql.Date;
 import java.util.Optional;
 
 import com.cst438.controllers.AssignmentController;
-import com.cst438.controllers.GradeBookController;
 import com.cst438.domain.Assignment;
+import com.cst438.domain.AssignmentDTO;
 import com.cst438.domain.AssignmentGrade;
 import com.cst438.domain.AssignmentGradeRepository;
 import com.cst438.domain.AssignmentRepository;
 import com.cst438.domain.Course;
 import com.cst438.domain.CourseRepository;
 import com.cst438.domain.Enrollment;
-import com.cst438.domain.GradebookDTO;
 import com.cst438.services.RegistrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -115,6 +113,16 @@ public class AdditionalJUnitTests {
         given(courseRepository.findById(TEST_COURSE_ID)).willReturn(Optional.of(course));
         given(assignmentRepository.save(any())).willReturn(assignment);
         // end of mock data
+
+        // TODO: Preparing body data/DTOs to be used here.
+        // AssignmentDTO tempDto = convertToDTO(assignment);
+        // response = mvc.perform(
+        //     MockMvcRequestBuilders
+        //     .post("/" + TEST_COURSE_ID + "/assignment/new/")
+        //     .content(asJsonString(tempDto))
+        //     .contentType(MediaType.APPLICATION_JSON)
+        //     .accept(MediaType.APPLICATION_JSON))
+        //     .andReturn().getResponse();
 
         response = mvc.perform(
             MockMvcRequestBuilders
@@ -345,5 +353,36 @@ public class AdditionalJUnitTests {
 
         // Considering the assignment is invalid, this SHOULD THROW A 400 HTTP status error at us.
         assertEquals(400, response.getStatus());
+    }
+
+    // Helper function for Story where we need to display the updated name to the
+    // front-end.
+    private AssignmentDTO convertToDTO(Assignment toConvert) {
+        AssignmentDTO toReturn = new AssignmentDTO();
+        toReturn.id = toConvert.getId();
+        toReturn.name = toConvert.getName();
+        toReturn.needsGrading = toConvert.getNeedsGrading();
+        toReturn.dueDate = toConvert.getDueDate();
+        toReturn.course = toConvert.getCourse();
+
+        return toReturn;
+    }
+
+    // Helper functions taken from other Unit Test to allow DTOs/Body data.
+    private static String asJsonString(final Object obj) {
+        try {
+
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static <T> T fromJsonString(String str, Class<T> valueType) {
+        try {
+            return new ObjectMapper().readValue(str, valueType);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
