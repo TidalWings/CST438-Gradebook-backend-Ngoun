@@ -46,15 +46,17 @@ public class RegistrationServiceMQ extends RegistrationService {
 	@Transactional
 	public void receive(EnrollmentDTO enrollmentDTO) {
 		// Majority of code/logic taken from EnrollmentController.
+        // Create a new potential enrollment.
 		Enrollment newEnroll = new Enrollment();
 		newEnroll.setStudentName(enrollmentDTO.studentName);
 		newEnroll.setStudentEmail(enrollmentDTO.studentEmail);
-		
+		// Find the potential course for the enrollment.
 		Course potentialCourse = courseRepository.findById(enrollmentDTO.course_id).orElse(null);
 		if (potentialCourse != null) {
+            // If found we'll save it.
 			newEnroll.setCourse(potentialCourse);
 			enrollmentRepository.save(newEnroll);
-		} else {
+		} else { // otherwise throw an error.
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error. Course not found.");
 		}
 	}
@@ -62,7 +64,7 @@ public class RegistrationServiceMQ extends RegistrationService {
 	// sender of messages to Registration Service
 	@Override
 	public void sendFinalGrades(int course_id, CourseDTOG courseDTO) {
-        courseDTO.course_id = course_id;
+        // Use RabbitTemplate to move the DTO to queue to be dealt w/ later by Register.
 		rabbitTemplate.convertAndSend(registrationQueue.getName(), courseDTO);
 	}
 

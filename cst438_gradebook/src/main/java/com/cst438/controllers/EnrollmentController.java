@@ -30,12 +30,14 @@ public class EnrollmentController {
 	@PostMapping("/enrollment")
 	@Transactional
 	public EnrollmentDTO addEnrollment(@RequestBody EnrollmentDTO enrollmentDTO) {
+        // Create new potential enrollment.
 		Enrollment newEnroll = new Enrollment();
 		newEnroll.setStudentName(enrollmentDTO.studentName);
 		newEnroll.setStudentEmail(enrollmentDTO.studentEmail);
-
+        // Using the course ID, find a potential course.
 		Course potentialCourse = courseRepository.findById(enrollmentDTO.course_id).orElse(null);
 		if (potentialCourse != null) {
+            // If exists, add it to the DTO, save and return it for Register to get via HTTP Req.
 			newEnroll.setCourse(potentialCourse);
 			newEnroll = enrollmentRepository.save(newEnroll);
 			enrollmentDTO.id = newEnroll.getId();
