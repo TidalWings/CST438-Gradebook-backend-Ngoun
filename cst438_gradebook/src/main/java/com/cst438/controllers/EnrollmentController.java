@@ -25,16 +25,25 @@ public class EnrollmentController {
 
 	/*
 	 * endpoint used by registration service to add an enrollment to an existing
-	 * course.
+	 * course. From walkthrough w/ vars & comments changed/added for clarity.
 	 */
 	@PostMapping("/enrollment")
 	@Transactional
 	public EnrollmentDTO addEnrollment(@RequestBody EnrollmentDTO enrollmentDTO) {
-		
-		//TODO  complete this method in homework 4
-		
-		return null;
-		
+        // Create new potential enrollment.
+		Enrollment newEnroll = new Enrollment();
+		newEnroll.setStudentName(enrollmentDTO.studentName);
+		newEnroll.setStudentEmail(enrollmentDTO.studentEmail);
+        // Using the course ID, find a potential course.
+		Course potentialCourse = courseRepository.findById(enrollmentDTO.course_id).orElse(null);
+		if (potentialCourse != null) {
+            // If exists, add it to the DTO, save and return it for Register to get via HTTP Req.
+			newEnroll.setCourse(potentialCourse);
+			newEnroll = enrollmentRepository.save(newEnroll);
+			enrollmentDTO.id = newEnroll.getId();
+			return enrollmentDTO;
+		} else {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error. Course not found.");
+		}
 	}
-
 }
